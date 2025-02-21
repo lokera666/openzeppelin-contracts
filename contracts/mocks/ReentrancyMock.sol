@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
-import "../security/ReentrancyGuard.sol";
-import "./ReentrancyAttack.sol";
+import {ReentrancyGuard} from "../utils/ReentrancyGuard.sol";
+import {ReentrancyAttack} from "./ReentrancyAttack.sol";
 
 contract ReentrancyMock is ReentrancyGuard {
     uint256 public counter;
@@ -33,8 +33,7 @@ contract ReentrancyMock is ReentrancyGuard {
 
     function countAndCall(ReentrancyAttack attacker) public nonReentrant {
         _count();
-        bytes4 func = bytes4(keccak256("callback()"));
-        attacker.callSender(func);
+        attacker.callSender(abi.encodeCall(this.callback, ()));
     }
 
     function _count() private {
